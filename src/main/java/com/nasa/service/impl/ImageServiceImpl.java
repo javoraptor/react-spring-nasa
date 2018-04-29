@@ -59,7 +59,7 @@ public class ImageServiceImpl implements ImageService {
 					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
 					try {
-						downloadResponseToFile(response);
+						downloadResponseToFile(response, date);
 					} catch (Exception e) {
 						log.error("Error in single rest call on success", e);
 						throw new IOException(e);
@@ -69,7 +69,7 @@ public class ImageServiceImpl implements ImageService {
 		});
 	}
 
-	private void downloadResponseToFile(Response response) throws IOException {
+	private void downloadResponseToFile(Response response, String date) throws IOException {
 		log.info("Downloading response to file: " + response);
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -81,7 +81,7 @@ public class ImageServiceImpl implements ImageService {
 				JsonNode photoNode = root.path("photos").get(0);
 				String idSource = photoNode.path("id").asText();
 				String name = photoNode.path("img_src").asText();
-				Utils.downloadImageToFile(name, idSource);
+				Utils.downloadImageToFile(name, idSource, date);
 			}
 		} catch (IOException e) {
 			log.error("Error reading response or writting file", e);

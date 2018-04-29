@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,25 +25,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Utils {
 
-	public static void downloadImageToFile(String url, String idSource) throws IOException {
+	public static void downloadImageToFile(String url, String idSource, String date) throws IOException {
 		log.info("Downloading image to file with url -> " + url + " : idSource -> " + idSource);
 		
 		RestTemplate restTemplate = new RestTemplate();
 		byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-		writeBytesToFile(imageBytes, idSource + ".jpg");
+		writeBytesToFile(imageBytes, idSource + ".jpg", date);
 	}
 
-	private static void writeBytesToFile(byte[] bFile, String fileDest) throws IOException {
+	private static void writeBytesToFile(byte[] bFile, String fileDest, String date) throws IOException {
 		log.info("Writing image bytes to file, file destination -> " + fileDest);
 		FileOutputStream fileOuputStream = null;
+		String imageDirectoryName = "./images/";
+		String fileLocation = "./images/" + convertToYearMonthDay(date) + "/";
 		
-		File imageDirectory = new File("./images/");
+		File imageDirectory = new File(imageDirectoryName);
 		if (!imageDirectory.exists() && !imageDirectory.isDirectory()) {
-			new File("./images/").mkdir();
+			if(!new File(imageDirectoryName).mkdir())
+			throw new IOException("Error creating directory with name -> " + imageDirectoryName);
+		}
+		
+		File fileDirectory = new File(fileLocation);
+		if (!fileDirectory.exists() && !fileDirectory.isDirectory()) {
+			if(!new File(fileLocation).mkdir())
+			throw new IOException("Error creating directory with date -> " + convertToYearMonthDay(date));
 		}
 		
 		try {
-			fileOuputStream = new FileOutputStream("./images/" + fileDest);
+			fileOuputStream = new FileOutputStream(fileLocation + fileDest);
 			fileOuputStream.write(bFile);
 
 		} catch (IOException e) {
