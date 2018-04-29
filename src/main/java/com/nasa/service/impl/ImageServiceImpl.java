@@ -35,7 +35,12 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public void executeMultipleRestCalls(List<String> cameraList, String date) throws IOException {
-		cameraList.forEach((camera) -> executeRestCall(date, camera));
+		try {
+			cameraList.forEach((camera) -> executeRestCall(date, camera));
+		} catch (Exception e) {
+			log.error("Error executing rest call", e);
+			throw new IOException(e);
+		}
 	}
 
 	public void executeRestCall(String date, String camera) {
@@ -45,7 +50,7 @@ public class ImageServiceImpl implements ImageService {
 		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
 			@Override
 			public void onFailure(Request request, IOException e) {
-				log.error("Error making single REST call", e);
+				log.error("Error in single rest call", e);
 			}
 
 			@Override
@@ -53,13 +58,18 @@ public class ImageServiceImpl implements ImageService {
 				if (!response.isSuccessful()) {
 					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
-					downloadToFile(response);
+					try {
+						downloadResponseToFile(response);
+					} catch (Exception e) {
+						log.error("Error in single rest call on success", e);
+						throw new IOException(e);
+					}
 				}
 			}
 		});
 	}
 
-	private void downloadToFile(Response response) {
+	private void downloadResponseToFile(Response response) throws IOException {
 		log.info("Downloading response to file: " + response);
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -74,7 +84,8 @@ public class ImageServiceImpl implements ImageService {
 				Utils.downloadImageToFile(name, idSource);
 			}
 		} catch (IOException e) {
-			log.error("Error reading response", e);
+			log.error("Error reading response or writting file", e);
+			throw new IOException(e);
 		}
 	}
 

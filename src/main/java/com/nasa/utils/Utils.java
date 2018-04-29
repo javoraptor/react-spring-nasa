@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Utils {
 
-	public static void downloadImageToFile(String url, String idSource) {
+	public static void downloadImageToFile(String url, String idSource) throws IOException {
 		log.info("Downloading image to file with url -> " + url + " : idSource -> " + idSource);
 		
 		RestTemplate restTemplate = new RestTemplate();
@@ -30,16 +32,22 @@ public class Utils {
 		writeBytesToFile(imageBytes, idSource + ".jpg");
 	}
 
-	private static void writeBytesToFile(byte[] bFile, String fileDest) {
+	private static void writeBytesToFile(byte[] bFile, String fileDest) throws IOException {
 		log.info("Writing image bytes to file, file destination -> " + fileDest);
 		FileOutputStream fileOuputStream = null;
-
+		
+		File imageDirectory = new File("./images/");
+		if (!imageDirectory.exists() && !imageDirectory.isDirectory()) {
+			new File("./images/").mkdir();
+		}
+		
 		try {
-			fileOuputStream = new FileOutputStream(".\\images\\" + fileDest);
+			fileOuputStream = new FileOutputStream("./images/" + fileDest);
 			fileOuputStream.write(bFile);
 
 		} catch (IOException e) {
 			log.error("Error writing bytes to file for -> " + fileDest, e);
+			throw new IOException(e);
 		} finally {
 			if (fileOuputStream != null) {
 				try {
