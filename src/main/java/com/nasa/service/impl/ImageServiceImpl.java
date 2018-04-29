@@ -20,35 +20,38 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @ConfigurationProperties()
-public class ImageServiceImpl implements ImageService{
-	
+@Slf4j
+public class ImageServiceImpl implements ImageService {
+
 	@Value("${privateKey}")
 	private String API_KEY;
-	
+
 	@Value("${nasa.uri}")
 	private String nasaUri;
-	
+
 	@Override
-	public void executeMultipleRestCalls(List<String> cameraList, String date) throws IOException{
+	public void executeMultipleRestCalls(List<String> cameraList, String date) throws IOException {
 		cameraList.forEach((camera) -> executeRestCall(date, camera));
 	}
 
-	public void executeRestCall(String date, String camera){
-
+	public void executeRestCall(String date, String camera) {
+		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
 		OkHttpClient client = new OkHttpClient();
 
 		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
 			@Override
 			public void onFailure(Request request, IOException e) {
-				e.printStackTrace();
+				log.error("Error making single REST call", e);
 			}
 
 			@Override
 			public void onResponse(Response response) throws IOException {
 				if (!response.isSuccessful()) {
-					throw new IOException("Unexpected code " + response);
+					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
 					downloadToFile(response);
 				}
@@ -57,6 +60,8 @@ public class ImageServiceImpl implements ImageService{
 	}
 
 	private void downloadToFile(Response response) {
+		log.info("Downloading response to file: " + response);
+
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			JsonNode root = mapper.readTree(response.body().string().toString());
@@ -69,21 +74,19 @@ public class ImageServiceImpl implements ImageService{
 				Utils.downloadImageToFile(name, idSource);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error reading response", e);
 		}
-		
 	}
 
 	private Request buildRequest(String date, String camera) {
-		
-		HttpUrl.Builder urlBuilder = HttpUrl.parse(nasaUri)
-				.newBuilder();
+
+		HttpUrl.Builder urlBuilder = HttpUrl.parse(nasaUri).newBuilder();
 		urlBuilder.addQueryParameter("api_key", API_KEY);
 		urlBuilder.addQueryParameter("earth_date", date);
 		urlBuilder.addQueryParameter("camera", camera);
 
 		return new Request.Builder().url(urlBuilder.build().toString()).build();
-		
+
 	}
 
 }
