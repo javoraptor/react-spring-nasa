@@ -23,13 +23,14 @@ class App extends Component {
   }
 
   onDateChange(e) {
-    this.setState({date: e.target.value});
+    this.setState({date: e.target.value, response:false});
   }
 
   onRadioSelection(e) {
     let name = e.target.name;
     this.setState({
-      [e.target.name]: !this.state[name]
+      [e.target.name]: !this.state[name],
+      response:false
     });
   }
 
@@ -44,7 +45,7 @@ class App extends Component {
     }
 
     fetch('http://localhost:9090/fetch-images/date/'
-    +this.state.date+ '/camera-list/'+list)
+    +this.state.date+ '/camera-list?cameras='+list)
       .then((response) => response.json()).then((responseJson) => {
         console.log('response:', responseJson);
         if(responseJson){
@@ -76,7 +77,7 @@ class App extends Component {
     console.log(this.state);
     return (<div className="App">
       <header className="App-header">
-
+        <img src={logo} className="App-logo" alt="logo"/>
         <h1 className="App-title">React App for NASA Rover</h1>
       </header>
 
@@ -103,7 +104,8 @@ class App extends Component {
           <Input name='on' type='date' onChange={(e) => this.onDateChange(e)}/>
         </Row>
         <div className="left-align">
-          <Button waves='light' onClick={() => this.onButtonClick()}>Submit</Button>
+          <Button waves='light' onClick={() => this.onButtonClick()}>Submit
+          <i className="material-icons right">send</i></Button>
         </div>
           {this.fetchCarousel()}
           <h2>
