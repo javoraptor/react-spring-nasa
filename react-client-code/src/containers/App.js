@@ -23,19 +23,20 @@ class App extends Component {
   }
 
   onDateChange(e) {
-    this.setState({date: e.target.value, response:false});
+    this.setState({date: e.target.value, response:''});
   }
 
   onRadioSelection(e) {
     let name = e.target.name;
     this.setState({
       [e.target.name]: !this.state[name],
-      response:false
+      response:''
     });
   }
 
   onButtonClick() {
-    //make rest call here
+    this.setState({response:''});
+    
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
        // do something with key|value
@@ -45,7 +46,30 @@ class App extends Component {
     }
 
     fetch('http://localhost:9090/images/date/'
-    +this.state.date+ '/camera-list?cameras='+list)
+    +this.state.date+ '?cameras='+list)
+      .then((response) => response.json()).then((responseJson) => {
+        console.log('response:', responseJson);
+        if(responseJson){
+          this.setState({
+            // imgList:responseJson
+            response:'Success! Images have been saved.'
+          });
+        }else{
+          this.setState({
+            // imgList:responseJson
+            response:'Sorry, there seems to be an issue'
+          });
+        }
+
+      }).catch((error) => {
+        console.error(error);
+      });
+  }
+
+  onFileButtonClick() {
+    this.setState({response:''});
+    //make rest call here
+    fetch('http://localhost:9090/images/file')
       .then((response) => response.json()).then((responseJson) => {
         console.log('response:', responseJson);
         if(responseJson){
@@ -107,6 +131,13 @@ class App extends Component {
           <Button waves='light' onClick={() => this.onButtonClick()}>Submit
           <i className="material-icons right">send</i></Button>
         </div>
+
+        <h3 className="left-align">Download custom dates from MarsDates.txt</h3>
+        <div className="left-align">
+          <Button waves='light' onClick={() => this.onFileButtonClick()}>Submit
+          <i className="material-icons right">send</i></Button>
+        </div>
+
           {this.fetchCarousel()}
           <h2>
             {this.state.response}

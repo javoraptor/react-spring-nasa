@@ -34,20 +34,22 @@ public class ImageServiceImpl implements ImageService {
 	private String nasaUri;
 
 	@Override
-	public void executeMultipleRestCalls(List<String> cameraList, String date) throws IOException {
+	public void executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate) throws IOException {
 		try {
-			cameraList.forEach((camera) -> executeRestCall(date, camera));
+			
+			dateList.forEach(date-> cameraList.forEach((camera) -> executeRestCall(date, camera, isCustomDate)));
+			
 		} catch (Exception e) {
 			log.error("Error executing rest call", e);
 			throw new IOException(e);
 		}
 	}
 
-	public void executeRestCall(String date, String camera) {
+	public void executeRestCall(String date, String camera, boolean isCustomDate) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
 		OkHttpClient client = new OkHttpClient();
 
-		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
+		client.newCall(buildRequest(Utils.convertToYearMonthDay(date, isCustomDate), camera)).enqueue(new Callback() {
 			@Override
 			public void onFailure(Request request, IOException e) {
 				log.error("Error in single rest call", e);
@@ -59,7 +61,7 @@ public class ImageServiceImpl implements ImageService {
 					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
 					try {
-						downloadResponseToFile(response, date);
+						downloadResponseToFile(response, date, isCustomDate);
 					} catch (Exception e) {
 						log.error("Error in single rest call on success", e);
 						throw new IOException(e);
@@ -69,8 +71,8 @@ public class ImageServiceImpl implements ImageService {
 		});
 	}
 
-	private void downloadResponseToFile(Response response, String date) throws IOException {
-		log.info("Downloading response to file: " + response);
+	private void downloadResponseToFile(Response response, String date, boolean isCustomDate) throws IOException {
+		log.info("Downloading response to file: " + response +" with date -> "+ date + "with isCustomDate ->" + isCustomDate);
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -81,7 +83,7 @@ public class ImageServiceImpl implements ImageService {
 				JsonNode photoNode = root.path("photos").get(0);
 				String idSource = photoNode.path("id").asText();
 				String name = photoNode.path("img_src").asText();
-				Utils.downloadImageToFile(name, idSource, date);
+				Utils.downloadImageToFile(name, idSource, date, isCustomDate);
 			}
 		} catch (IOException e) {
 			log.error("Error reading response or writting file", e);
