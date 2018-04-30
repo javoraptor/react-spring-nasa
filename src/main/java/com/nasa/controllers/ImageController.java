@@ -23,7 +23,7 @@ public class ImageController {
 	@Autowired
 	ImageService imageService;
 
-	@GetMapping("/fetch-images/date/{date}/camera-list")
+	@GetMapping("/images/date/{date}/camera-list")
 	public boolean fetchImages(@PathVariable("date") String date,
 								@RequestParam("cameras") ArrayList<String> cameraList) {
 		log.info("Begining REST call with parameters: date -> "+date+" : cameraList -> " + cameraList );

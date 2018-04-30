@@ -44,7 +44,7 @@ class App extends Component {
        }
     }
 
-    fetch('http://localhost:9090/fetch-images/date/'
+    fetch('http://localhost:9090/images/date/'
     +this.state.date+ '/camera-list?cameras='+list)
       .then((response) => response.json()).then((responseJson) => {
         console.log('response:', responseJson);
