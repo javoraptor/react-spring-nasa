@@ -100,13 +100,11 @@ public class Utils {
 	}
 	
 	private static void createDirectories(String fileLocation) throws IOException {
-		if (!new File(imageDirectoryName).exists())
-			if (!new File(imageDirectoryName).mkdir())
+		if (!new File(imageDirectoryName).exists() && !new File(imageDirectoryName).mkdir())
 				throw new IOException("Error creating main directory with name -> " + imageDirectoryName);
 
 		File fileDirectory = new File(fileLocation);
-		if (!fileDirectory.exists() && !fileDirectory.isDirectory()) {
-			if (!new File(fileLocation).mkdir())
+		if (!fileDirectory.exists() && !fileDirectory.isDirectory() && !new File(fileLocation).mkdir()) {
 				throw new IOException("Error creating directory with name -> " + fileLocation);
 		}
 	}

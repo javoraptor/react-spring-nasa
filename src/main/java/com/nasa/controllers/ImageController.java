@@ -33,7 +33,7 @@ public class ImageController {
 
 	@GetMapping("/images/date/{date}")
 	public boolean fetchImages(@PathVariable("date") String date,
-								@RequestParam(value="cameras", required=true) ArrayList<String> cameraList) {
+								@RequestParam(value="cameras", required=true) List<String> cameraList) {
 		log.info("Begining REST call with parameters: date -> "+date+" : cameraList -> " + cameraList );
 		try {
 			imageService.executeMultipleRestCalls(cameraList, Arrays.asList(date), true);
@@ -45,7 +45,7 @@ public class ImageController {
 	}
 	
 	@GetMapping("/images/file")
-	public boolean readDatesFromFile(@RequestParam(value="cameras", required=true) ArrayList<String> cameraList) {
+	public boolean readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
 		log.info("Begining REST call with parameters: cameraList -> " + cameraList );
 		try {
 			imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);

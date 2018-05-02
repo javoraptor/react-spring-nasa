@@ -27,3 +27,6 @@ hs_err_pid*
 .project
 .settings/*
 bin/
+
+*.DS_Store
+images/*
