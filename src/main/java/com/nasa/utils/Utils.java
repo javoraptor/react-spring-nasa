@@ -28,7 +28,8 @@ public class Utils {
 	}
 
 	public static void downloadImageToFile(String url, String idSource, String date, boolean isCustomDate) throws IOException {
-		log.info("Downloading image to file with url -> " + url + " : idSource -> " + idSource + " : date -> " + date + " : isCustomDate ->" + isCustomDate);
+		log.info("Downloading image to file with url -> " + url + " : idSource -> " + idSource 
+				+ " : date -> " + date + " : isCustomDate ->" + isCustomDate);
 
 		RestTemplate restTemplate = new RestTemplate();
 		byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
@@ -42,7 +43,7 @@ public class Utils {
 
 		try (Scanner scan = new Scanner(new File(fileName))) {
 			while (scan.hasNext()) {
-				dateList.add(convertToYearMonthDay(scan.next(), false));
+				dateList.add(scan.next());
 			}
 		} catch (Exception e) {
 			log.error("Error reading file -> " + fileName, e);

@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nasa.service.AsyncCallback;
 import com.nasa.service.ImageService;
 import com.nasa.utils.Utils;
 import com.squareup.okhttp.Callback;
@@ -34,19 +33,34 @@ public class ImageServiceImpl implements ImageService {
 	private String nasaUri;
 
 	@Override
-	public void executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate) throws IOException {
+	public List<String> executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate) throws IOException {		
+		List<String> list = new ArrayList<String>();
 		try {
 			
-			dateList.forEach(date-> cameraList.forEach((camera) -> executeRestCall(date, camera, isCustomDate)));
+			dateList.forEach(date-> cameraList.forEach((camera) -> executeRestCall(date, camera, isCustomDate, new AsyncCallback<String>() {
+			    @Override
+			    public void callbackValue(String value) {
+			    	if(value != null)
+			    		list.add(value);
+			    }
+			}) ));
 			
 		} catch (Exception e) {
 			log.error("Error executing rest call", e);
 			throw new IOException(e);
 		}
+		
+		log.info("list values are ->");
+		for(String s : list){
+			log.info(s);
+		}
+		
+		return list;
 	}
 
-	public void executeRestCall(String date, String camera, boolean isCustomDate) {
+	public void executeRestCall(String date, String camera, boolean isCustomDate, final AsyncCallback asyncCallback) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
+		
 		OkHttpClient client = new OkHttpClient();
 
 		client.newCall(buildRequest(Utils.convertToYearMonthDay(date, isCustomDate), camera)).enqueue(new Callback() {
@@ -61,34 +75,38 @@ public class ImageServiceImpl implements ImageService {
 					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
 					try {
-						downloadResponseToFile(response, date, isCustomDate);
+//						if(downloadResponseToFile(response, date, isCustomDate) != null)
+							asyncCallback.callbackValue(downloadResponseToFile(response, date, isCustomDate));
+						
 					} catch (Exception e) {
 						log.error("Error in single rest call on success", e);
 						throw new IOException(e);
 					}
 				}
 			}
-		});
+		});		
 	}
 
-	private void downloadResponseToFile(Response response, String date, boolean isCustomDate) throws IOException {
+	private String downloadResponseToFile(Response response, String date, boolean isCustomDate) throws IOException {
 		log.info("Downloading response to file: " + response +" with date -> "+ date + "with isCustomDate ->" + isCustomDate);
-
+		
+		String name = null;
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			JsonNode root = mapper.readTree(response.body().string().toString());
+			JsonNode root = mapper.readTree(response.body().string());
 
 			// check if any photos are present
-			if (root.path("photos").size() > 0) {
+			if (root != null && root.path("photos").size() > 0) {
 				JsonNode photoNode = root.path("photos").get(0);
 				String idSource = photoNode.path("id").asText();
-				String name = photoNode.path("img_src").asText();
+				name = photoNode.path("img_src").asText();
 				Utils.downloadImageToFile(name, idSource, date, isCustomDate);
 			}
 		} catch (IOException e) {
 			log.error("Error reading response or writting file", e);
 			throw new IOException(e);
 		}
+		return name;
 	}
 
 	private Request buildRequest(String date, String camera) {

@@ -46,17 +46,17 @@ class App extends Component {
     }
 
     fetch('http://localhost:9090/images/date/'
-    +this.state.date+ '?cameras='+list)
+    +this.state.date + '?cameras='+list)
       .then((response) => response.json()).then((responseJson) => {
-        console.log('response:', responseJson);
+        console.log('JSONresponse: ', responseJson);
         if(responseJson){
           this.setState({
-            // imgList:responseJson
+            imgList:responseJson,
             response:'Success! Images have been saved.'
           });
         }else{
           this.setState({
-            // imgList:responseJson
+            imgList:responseJson,
             response:'Sorry, there seems to be an issue'
           });
         }
@@ -68,18 +68,27 @@ class App extends Component {
 
   onFileButtonClick() {
     this.setState({response:''});
+    
+    let list = [];
+    for (let [key, value] of Object.entries(this.state)) {
+       // do something with key|value
+       if(value === true){
+         list.push(key);
+       }
+    }
+    
     //make rest call here
-    fetch('http://localhost:9090/images/file')
+    fetch('http://localhost:9090/images/file'+ '?cameras='+list)
       .then((response) => response.json()).then((responseJson) => {
         console.log('response:', responseJson);
         if(responseJson){
           this.setState({
-            // imgList:responseJson
+            imgList:responseJson,
             response:'Success! Images have been saved.'
           });
         }else{
           this.setState({
-            // imgList:responseJson
+            imgList:responseJson,
             response:'Sorry, there seems to be an issue'
           });
         }
@@ -90,13 +99,14 @@ class App extends Component {
   }
 
   fetchCarousel(){
+    console.log('logging carousel', this.state.imgList);
     if(this.state.imgList.length > 0){
       return(
         <Carousel images={this.state.imgList}/>
       );
     }
   }
-// <img src={logo} className="App-logo" alt="logo"/>
+
   render() {
     console.log(this.state);
     return (<div className="App">

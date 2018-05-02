@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,22 +32,26 @@ public class ImageController {
 	@Value("${date.file}")
 	private String dateFile;
 
+	
 	@GetMapping("/images/date/{date}")
-	public boolean fetchImages(@PathVariable("date") String date,
+	public List<String> fetchImages(@PathVariable("date") String date,
 								@RequestParam(value="cameras", required=true) List<String> cameraList) {
-		log.info("Begining REST call with parameters: date -> "+date+" : cameraList -> " + cameraList );
+		log.info("Begining REST call with parameters: date -> " + date + " : cameraList -> " + cameraList);
+		List<String> list = new ArrayList<String>();
+		
 		try {
-			imageService.executeMultipleRestCalls(cameraList, Arrays.asList(date), true);
+			list = imageService.executeMultipleRestCalls(cameraList, Arrays.asList(date), true);
 		} catch (IOException e) {
 			log.error("Error making REST calls", e.toString());
-			return false;
+			return new ArrayList<String>();
 		}
-		return true;
+		return list;
 	}
 	
+	@Cacheable("file-images")
 	@GetMapping("/images/file")
 	public boolean readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
-		log.info("Begining REST call with parameters: cameraList -> " + cameraList );
+		log.info("Begining REST call with parameters: cameraList -> " + cameraList);
 		try {
 			imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);
 		} catch (IOException e) {
@@ -55,5 +60,4 @@ public class ImageController {
 		}
 		return true;
 	}
-
 }
