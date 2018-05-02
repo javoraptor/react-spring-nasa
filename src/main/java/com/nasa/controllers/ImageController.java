@@ -50,14 +50,15 @@ public class ImageController {
 	
 	@Cacheable("file-images")
 	@GetMapping("/images/file")
-	public boolean readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
+	public List<String> readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
 		log.info("Begining REST call with parameters: cameraList -> " + cameraList);
+		List<String> list = new ArrayList<String>();
 		try {
-			imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);
+			list = imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);
 		} catch (IOException e) {
 			log.error("Error making REST calls", e.toString());
-			return false;
+			return new ArrayList<String>();
 		}
-		return true;
+		return list;
 	}
 }

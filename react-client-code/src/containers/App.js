@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import logo from '../logo.svg';
 import './App.css';
-import {Row, Input, Button, Carousel} from 'react-materialize'
+import {Row, Input, Button, Carousel, Table} from 'react-materialize';
+import { RingLoader } from 'react-spinners';
 
 class App extends Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class App extends Component {
       PANCAM: false,
       MINITES: false,
       response:'',
-      imgList:[]
+      imgList:[],
+      loading: false
     }
   }
 
@@ -35,8 +37,8 @@ class App extends Component {
   }
 
   onButtonClick() {
-    this.setState({response:''});
-    
+    this.setState({response:'',loading:true});
+
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
        // do something with key|value
@@ -52,12 +54,14 @@ class App extends Component {
         if(responseJson){
           this.setState({
             imgList:responseJson,
-            response:'Success! Images have been saved.'
+            response:'Success! Images have been saved',
+            loading:false
           });
         }else{
           this.setState({
             imgList:responseJson,
-            response:'Sorry, there seems to be an issue'
+            response:'Sorry, there seems to be an issue',
+            loading:false
           });
         }
 
@@ -67,8 +71,8 @@ class App extends Component {
   }
 
   onFileButtonClick() {
-    this.setState({response:''});
-    
+    this.setState({response:'',loading:true});
+
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
        // do something with key|value
@@ -76,7 +80,7 @@ class App extends Component {
          list.push(key);
        }
     }
-    
+
     //make rest call here
     fetch('http://localhost:9090/images/file'+ '?cameras='+list)
       .then((response) => response.json()).then((responseJson) => {
@@ -84,12 +88,14 @@ class App extends Component {
         if(responseJson){
           this.setState({
             imgList:responseJson,
-            response:'Success! Images have been saved.'
+            response:'Success! Images have been saved',
+            loading:false
           });
         }else{
           this.setState({
             imgList:responseJson,
-            response:'Sorry, there seems to be an issue'
+            response:'Sorry, there seems to be an issue',
+            loading:false
           });
         }
 
@@ -100,11 +106,92 @@ class App extends Component {
 
   fetchCarousel(){
     console.log('logging carousel', this.state.imgList);
+
+    if(this.state.loading){
+      return (
+        <div className="center-div">
+        <div className='sweet-loading'>
+          <RingLoader
+            color={'#123abc'}
+            loading={this.state.loading}
+          />
+        </div>
+        </div>
+    );
+    }
+
     if(this.state.imgList.length > 0){
       return(
         <Carousel images={this.state.imgList}/>
       );
     }
+  }
+
+  customDate(){
+    return(<div className="td-extra-padding">
+      <h3>
+        Select Earth Date
+      </h3>
+      <Row className="calendar">
+
+            <div className="center-div">
+              <Input name='on' type='date' onChange={(e) => this.onDateChange(e)}/>
+            </div>
+          </Row>
+
+          <div>
+            <Button waves='light' onClick={() => this.onButtonClick()}>Submit
+            <i className="material-icons right">send</i></Button>
+          </div>
+          </div>
+    );
+  }
+
+  fileDate(){
+    return(<div>
+      <h3>Download custom dates from MarsDates.txt</h3>
+                <div>
+                  <Button waves='light' onClick={() => this.onFileButtonClick()}>Submit
+                  <i className="material-icons right">send</i></Button>
+                </div>
+              </div>
+    );
+  }
+
+  renderTable(){
+    return(
+      <div className="center">
+      <Table responsive={true} centered={true}>
+        <tbody>
+          <tr>
+            <td>{this.customDate()}</td>
+            <td>{this.fileDate()}</td>
+          </tr>
+        </tbody>
+      </Table>
+      </div>
+    );
+  }
+
+  renderCameraList(){
+    return(
+      <div className="center">
+        <h3>
+          Select Camera
+        </h3>
+        <Row className="center-div">
+          <Input name='FHAZ' type='checkbox' value='fhaz' label='FHAZ' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='RHAZ' type='checkbox' value='rhaz' label='RHAZ' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='MAST' type='checkbox' value='mast' label='MAST' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='CHEMCAM' type='checkbox' value='chemcam' label='CHEMCAM' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='MAHLI' type='checkbox' value='chemcam' label='MAHLI' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='MARDI' type='checkbox' value='chemcam' label='MARDI' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='NAVCAM' type='checkbox' value='chemcam' label='NAVCAM' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='PANCAM' type='checkbox' value='chemcam' label='PANCAM' onChange={(e) => this.onRadioSelection(e)}/>
+          <Input name='MINITES' type='checkbox' value='chemcam' label='MINITES' onChange={(e) => this.onRadioSelection(e)}/>
+        </Row>
+      </div>
+    );
   }
 
   render() {
@@ -116,37 +203,9 @@ class App extends Component {
       </header>
 
       <div className="body-div">
-        <h3 className="left-align">
-          Select Camera
-        </h3>
-        <Row>
-          <Input name='FHAZ' type='checkbox' value='fhaz' label='FHAZ' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='RHAZ' type='checkbox' value='rhaz' label='RHAZ' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='MAST' type='checkbox' value='mast' label='MAST' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='CHEMCAM' type='checkbox' value='chemcam' label='CHEMCAM' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='MAHLI' type='checkbox' value='chemcam' label='MAHLI' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='MARDI' type='checkbox' value='chemcam' label='MARDI' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='NAVCAM' type='checkbox' value='chemcam' label='NAVCAM' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='PANCAM' type='checkbox' value='chemcam' label='PANCAM' onChange={(e) => this.onRadioSelection(e)}/>
-          <Input name='MINITES' type='checkbox' value='chemcam' label='MINITES' onChange={(e) => this.onRadioSelection(e)}/>
-        </Row>
+          {this.renderCameraList()}
 
-        <Row className="calendar">
-          <h3 className="left-align">
-            Select Earth Date
-          </h3>
-          <Input name='on' type='date' onChange={(e) => this.onDateChange(e)}/>
-        </Row>
-        <div className="left-align">
-          <Button waves='light' onClick={() => this.onButtonClick()}>Submit
-          <i className="material-icons right">send</i></Button>
-        </div>
-
-        <h3 className="left-align">Download custom dates from MarsDates.txt</h3>
-        <div className="left-align">
-          <Button waves='light' onClick={() => this.onFileButtonClick()}>Submit
-          <i className="material-icons right">send</i></Button>
-        </div>
+          {this.renderTable()}
 
           {this.fetchCarousel()}
           <h2>

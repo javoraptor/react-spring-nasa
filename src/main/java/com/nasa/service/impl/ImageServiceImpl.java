@@ -33,63 +33,48 @@ public class ImageServiceImpl implements ImageService {
 	private String nasaUri;
 
 	@Override
-	public List<String> executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate) throws IOException {		
-		List<String> list = new ArrayList<String>();
+	public List<String> executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate)
+			throws IOException {
+		final List<String> list = new ArrayList<String>();
 		try {
-			
-			dateList.forEach(date-> cameraList.forEach((camera) -> executeRestCall(date, camera, isCustomDate, new AsyncCallback<String>() {
-			    @Override
-			    public void callbackValue(String value) {
-			    	if(value != null)
-			    		list.add(value);
-			    }
-			}) ));
-			
+
+			dateList.forEach(date -> cameraList.forEach((camera) -> {
+				if (executeRestCall(date, camera, isCustomDate) != null)
+					list.add(executeRestCall(date, camera, isCustomDate));
+			}));
+
 		} catch (Exception e) {
 			log.error("Error executing rest call", e);
 			throw new IOException(e);
 		}
-		
+
 		log.info("list values are ->");
-		for(String s : list){
+		for (String s : list) {
 			log.info(s);
 		}
-		
+
 		return list;
 	}
 
-	public void executeRestCall(String date, String camera, boolean isCustomDate, final AsyncCallback asyncCallback) {
+	public String executeRestCall(String date, String camera, boolean isCustomDate) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
-		
+		String result = null;
 		OkHttpClient client = new OkHttpClient();
 
-		client.newCall(buildRequest(Utils.convertToYearMonthDay(date, isCustomDate), camera)).enqueue(new Callback() {
-			@Override
-			public void onFailure(Request request, IOException e) {
-				log.error("Error in single rest call", e);
-			}
-
-			@Override
-			public void onResponse(Response response) throws IOException {
-				if (!response.isSuccessful()) {
-					throw new IOException("HTTP response code not within 200-300: " + response);
-				} else {
-					try {
-//						if(downloadResponseToFile(response, date, isCustomDate) != null)
-							asyncCallback.callbackValue(downloadResponseToFile(response, date, isCustomDate));
-						
-					} catch (Exception e) {
-						log.error("Error in single rest call on success", e);
-						throw new IOException(e);
-					}
-				}
-			}
-		});		
+		try {
+			Response response = client.newCall(buildRequest(Utils.convertToYearMonthDay(date, isCustomDate), camera))
+					.execute();
+			result = downloadResponseToFile(response, date, isCustomDate);
+		} catch (IOException e) {
+			log.error("Error in single rest call", e);
+		}
+		return result;
 	}
 
 	private String downloadResponseToFile(Response response, String date, boolean isCustomDate) throws IOException {
-		log.info("Downloading response to file: " + response +" with date -> "+ date + "with isCustomDate ->" + isCustomDate);
-		
+		log.info("Downloading response to file: " + response + " with date -> " + date + "with isCustomDate ->"
+				+ isCustomDate);
+
 		String name = null;
 		ObjectMapper mapper = new ObjectMapper();
 		try {
