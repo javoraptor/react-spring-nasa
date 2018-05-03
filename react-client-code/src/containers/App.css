@@ -8,12 +8,12 @@ body {
   text-align: center;
 }
 
-.center {
+.center-text {
   text-align: center;
 }
 
-.td-extra-padding{
-  padding-top: 10px !important;
+.div-padding-top{
+  padding-top: 5% !important;
 }
 .center-div{
   display: flex;
@@ -44,14 +44,6 @@ body {
 .body-div {
   padding: 10px;
 }
-
-.left-align {
-  text-align: left;
-}
-
-/*.calendar{
-  padding-top: 20px;
-}*/
 
 @keyframes App-logo-spin {
   from {

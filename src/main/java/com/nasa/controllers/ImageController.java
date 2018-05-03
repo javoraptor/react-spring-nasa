@@ -32,7 +32,7 @@ public class ImageController {
 	@Value("${date.file}")
 	private String dateFile;
 
-	
+	@Cacheable("ui-images")
 	@GetMapping("/images/date/{date}")
 	public List<String> fetchImages(@PathVariable("date") String date,
 								@RequestParam(value="cameras", required=true) List<String> cameraList) {
