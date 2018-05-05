@@ -58,3 +58,8 @@ jacocoTestReport {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
 }
+
+task copyReactBuild(type: Copy) {
+		    from 'react-client-code/build'
+    		into 'src/main/resources/static'
+}
