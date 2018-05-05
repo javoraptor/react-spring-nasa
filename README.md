@@ -57,7 +57,7 @@ To execute tests:
 gradle test
 ```
 
-##Code Analysis
+## Code Analysis
 
 PMD Analysis: 
 
@@ -98,8 +98,8 @@ gradle copyReactBuild build
 
 ## Highlights
 
-Caching: Fixed rate of 6 hours, can be changed in config file
-Async Rest: WIP on asynch branch
+* Caching: Fixed rate of 6 hours, can be changed in config file
+* Async Rest: WIP on asynch branch
 
 ## Built With
 
