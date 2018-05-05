@@ -3,6 +3,10 @@ import logo from '../logo.svg';
 import './App.css';
 import {Row, Input, Button, Carousel, Table} from 'react-materialize';
 import {RingLoader} from 'react-spinners';
+import Calendar from '../components/calendar';
+import CustomDate from '../components/custom-date';
+import FileDate from '../components/file-date';
+import ImageCarousel from '../components/image-carousel';
 
 class App extends Component {
   constructor(props) {
@@ -36,8 +40,8 @@ class App extends Component {
     });
   }
 
-  onButtonClick() {
-    if(this.state.date === ''){
+  onCalendarButtonClick() {
+    if (this.state.date === '') {
       return;
     }
     this.setState({response: '', loading: true});
@@ -88,94 +92,9 @@ class App extends Component {
     });
   }
 
-  fetchCarousel() {
-    console.log('logging carousel', this.state.imgList);
-
-    if (this.state.loading) {
-      return (<div className="center-div div-padding-top">
-        <div className='sweet-loading'>
-          <RingLoader color={'#123abc'} loading={this.state.loading}/>
-        </div>
-      </div>);
-    }
-
-    if (this.state.imgList.length > 0) {
-      return (<Carousel images={this.state.imgList}/>);
-    }
-  }
-
-  dateCheck(){
-    if(this.state.date === ''){
-      return(
-        <div>
-          Please Enter A Valid Date
-        </div>
-      );
-    }
-
-  }
-  customDate() {
-    return (<div className="div-padding-top">
-      <h3>
-        Select Earth Date
-      </h3>
-      <Row className="calendar">
-        <div className="center-div">
-          <Input name='on' type='date' onChange={(e) => this.onDateChange(e)}/>
-        </div>
-      </Row>
-
-      {this.dateCheck()}
-
-      <div>
-        <Button waves='light' onClick={() => this.onButtonClick()}>Submit
-          <i className="material-icons right">send</i>
-        </Button>
-      </div>
-    </div>);
-  }
-
-  fileDate() {
-    return (<div className="div-padding-top">
-      <h3>Download Dates From MarsDates.txt</h3>
-      <div>
-        <Button waves='light' onClick={() => this.onFileButtonClick()}>Submit
-          <i className="material-icons right">send</i>
-        </Button>
-      </div>
-    </div>);
-  }
-
-  renderTable() {
-    return (<div className="center-text">
-    {this.customDate()}
-    <h3 className="div-padding-top">-- OR --</h3>
-    {this.fileDate()}
-
-    </div>);
-  }
-
-  renderCameraList() {
-    return (<div className="center-text">
-      <h3>
-        Select Cameras
-      </h3>
-      <Row className="center-div">
-        <Input name='FHAZ' type='checkbox' value='fhaz' label='FHAZ' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='RHAZ' type='checkbox' value='rhaz' label='RHAZ' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='MAST' type='checkbox' value='mast' label='MAST' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='CHEMCAM' type='checkbox' value='chemcam' label='CHEMCAM' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='MAHLI' type='checkbox' value='chemcam' label='MAHLI' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='MARDI' type='checkbox' value='chemcam' label='MARDI' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='NAVCAM' type='checkbox' value='chemcam' label='NAVCAM' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='PANCAM' type='checkbox' value='chemcam' label='PANCAM' onChange={(e) => this.onRadioSelection(e)}/>
-        <Input name='MINITES' type='checkbox' value='chemcam' label='MINITES' onChange={(e) => this.onRadioSelection(e)}/>
-      </Row>
-    </div>);
-  }
-
   render() {
     console.log(this.state);
+    
     return (<div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
@@ -183,11 +102,16 @@ class App extends Component {
       </header>
 
       <div className="body-div">
-        {this.renderCameraList()}
+        <Calendar callback={(e) => this.onRadioSelection(e)}/>
 
-        {this.renderTable()}
+        <div className="center-text">
+          <CustomDate dateCallback={(e) => this.onDateChange(e)} buttonCallback={() => this.onCalendarButtonClick()} date={this.state.date}/>
+          <h3 className="div-padding-top">-- OR --</h3>
+          <FileDate callback={() => this.onFileButtonClick()}/>
+        </div>
 
-        {this.fetchCarousel()}
+        <ImageCarousel imgList={this.state.imgList} loading={this.state.loading}/>
+
         <h2>
           {this.state.response}
         </h2>

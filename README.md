@@ -49,7 +49,7 @@ In your web browser of choice navigate to http://localhost:9090/ in order to vie
 
 Explain tests used, controller, service ect...
 
-### Unit Tests Excution
+### Unit Tests Execution
 
 To execute tests:
 
@@ -82,9 +82,18 @@ Sonar Analysis:
 ```
 
 ## Deployment
-In order to deploy application all final react files need to be included into src/main/resources.
 
-Build bundle:
+If deploying application as is you can leverage the gradle wrapper:
+
+In order to deploy application all final react files need to be included into src/main/resources. This will download any dependencies needed and start the embedded Tomcat server that will be listening for request on port 9090:
+
+```
+./gradlew bootRun
+```
+
+If changes to the front end have been made you will have to incorporate those changes into the spring boot app by doing the following tasks:
+
+Build react application:
 
 ```
 yarn build
@@ -96,6 +105,8 @@ Build jar:
 gradle copyReactBuild build
 ```
 
+You can now execute the jar located under build/libs. If you would like to use the wrapper then only (gradle copyReactBuild) is needed before executing (./gradlew bootRun)
+
 ## Highlights
 
 * Caching: Fixed rate of 6 hours, can be changed in config file
@@ -103,8 +114,10 @@ gradle copyReactBuild build
 
 ## Built With
 
-* [React](https://reactjs.org/) - UI Framework
+* [React](https://reactjs.org/) - UI JS Application
 * [React Materizlise](https://react-materialize.github.io) - UI Styling
+* [Spring](https://projects.spring.io/spring-boot/) - JAVA Application
+* [Gradle](https://gradle.org/) - Build tool
 * [Maven](https://maven.apache.org/) - BackEnd Dependency Management
 * [NPM](https://www.npmjs.com/) - FrontEnd Dependency Management
 
