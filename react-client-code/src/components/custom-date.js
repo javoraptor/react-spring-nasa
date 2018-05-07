@@ -1,23 +1,19 @@
 import React from 'react';
-import {Row, Input, Button} from 'react-materialize';
-
+import {Segment, Input, Button} from 'semantic-ui-react';
 
 const customDate = ({dateCallback, buttonCallback, date})=>{
-  return (<div className="div-padding-top">
+  return (<div>
     <h3>
       Select Earth Date
     </h3>
-    <Row className="calendar">
-      <div className="center-div">
+      <div>
         <Input name='on' type='date' onChange={(e) => dateCallback(e)}/>
       </div>
-    </Row>
 
     {dateCheck(date)}
 
     <div>
-      <Button waves='light' onClick={() => buttonCallback()}>Submit
-        <i className="material-icons right">send</i>
+      <Button color='facebook' onClick={() => buttonCallback()}>Submit
       </Button>
     </div>
   </div>);
@@ -26,9 +22,9 @@ const customDate = ({dateCallback, buttonCallback, date})=>{
 const dateCheck = (date)=>{
   if(date === ''){
     return(
-      <div>
+      <p>
         Please Enter A Valid Date
-      </div>
+      </p>
     );
   }
 }

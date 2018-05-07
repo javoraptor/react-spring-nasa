@@ -1,12 +1,13 @@
 import React from 'react';
-import {Button} from 'react-materialize';
+import {Button} from 'semantic-ui-react';
 
-const FileDate = ({callback}) =>{
-  return (<div className="div-padding-top">
+const FileDate = ({callback, dates}) =>{
+  return (<div>
     <h3>Download Dates From MarsDates.txt</h3>
+    <h4>Dates:</h4>
+    <h5>{dates}</h5>
     <div>
-      <Button waves='light' onClick={() => callback()}>Submit
-        <i className="material-icons right">send</i>
+      <Button color='facebook' onClick={() => callback()}>Submit
       </Button>
     </div>
   </div>);

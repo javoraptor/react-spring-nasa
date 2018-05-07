@@ -1,6 +1,7 @@
 package com.nasa.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -36,7 +37,7 @@ public class Utils {
 		writeBytesToFile(imageBytes, idSource + ".jpg", date, isCustomDate);
 	}
 
-	public static List<String> readFileIntoDateArray(String fileName) {
+	public static List<String> readFileIntoDateArray(String fileName) throws FileNotFoundException {
 		log.info("Reading file into date array, file name -> " + fileName);
 
 		List<String> dateList = new ArrayList<>();
@@ -47,6 +48,7 @@ public class Utils {
 			}
 		} catch (Exception e) {
 			log.error("Error reading file -> " + fileName, e);
+			throw new FileNotFoundException();
 		}
 		return dateList;
 	}
@@ -56,7 +58,8 @@ public class Utils {
 		SimpleDateFormat originalFormat;
 		
 		if(isCustomDate) {
-			originalFormat = new SimpleDateFormat("dd MMMM, yyyy");
+			return temp;
+//			originalFormat = new SimpleDateFormat("dd MMMM, yyyy");
 		}else {
 			originalFormat = new SimpleDateFormat("dd-MMM-yy");
 		}

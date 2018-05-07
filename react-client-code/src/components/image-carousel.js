@@ -1,6 +1,7 @@
 import React from 'react';
 import {RingLoader} from 'react-spinners';
-import {Carousel} from 'react-materialize';
+// import {Carousel} from 'react-materialize';
+import {Carousel} from 'react-responsive-carousel';
 
 const ImageCarousel = ({imgList, loading}) =>{
     console.log('logging carousel', imgList);
@@ -14,8 +15,22 @@ const ImageCarousel = ({imgList, loading}) =>{
 }
 const carousel = (imgList) =>{
   if (imgList.length > 0) {
-    return (<Carousel images={imgList}/>);
+    return (<div>
+      <Carousel>
+        {renderImages(imgList)}
+      </Carousel>
+    </div>);
   }
+}
+
+const renderImages = (imgList) =>{
+  return imgList.map((e)=>{
+    return(
+      <div>
+        <img src={e} />
+      </div>
+    );
+  } );
 }
 
 const isLoading = (loading) =>{

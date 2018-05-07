@@ -3,6 +3,7 @@ package com.nasa.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class UtilsTest {
 	}
 	
 	@Test
-	public void givenFile_whenProcessing_thenReadIntoArray() {
+	public void givenFile_whenProcessing_thenReadIntoArray() throws FileNotFoundException {
 		
 		@SuppressWarnings("static-access")
 		List<String> list = utils.readFileIntoDateArray("src/MarsDates.txt");

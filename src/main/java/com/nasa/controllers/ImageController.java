@@ -21,7 +21,7 @@ import com.nasa.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@CrossOrigin //allows react server to connect
+//@CrossOrigin(origins = "http://localhost:3000")
 @ConfigurationProperties()
 @Slf4j
 public class ImageController {
@@ -55,10 +55,11 @@ public class ImageController {
 		List<String> list = new ArrayList<String>();
 		try {
 			list = imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Error making REST calls", e.toString());
 			return new ArrayList<String>();
 		}
 		return list;
 	}
+
 }

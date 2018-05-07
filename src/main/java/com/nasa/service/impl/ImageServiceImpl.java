@@ -105,4 +105,10 @@ public class ImageServiceImpl implements ImageService {
 
 	}
 
+	@Override
+	public List<String> returnDatesFromFile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration 
-public class AppConfig{
+public class AppConfig {
 	
 	@Bean
 	public RestTemplate restTemplate(List<HttpMessageConverter<?>> messageConverters) {
