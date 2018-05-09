@@ -1,11 +1,8 @@
 import React from 'react';
 import {RingLoader} from 'react-spinners';
-// import {Carousel} from 'react-materialize';
 import {Carousel} from 'react-materialize';
 
 const ImageCarousel = ({imgList, loading}) =>{
-    console.log('logging carousel', imgList);
-
     return(
       <div>
         {isLoading(loading)}
@@ -17,7 +14,7 @@ const ImageCarousel = ({imgList, loading}) =>{
 const carousel = (imgList) =>{
   if (imgList.length > 0) {
     return (<div>
-      <Carousel images={imgList}/>
+      <Carousel images={imgList} />
     </div>);
   }
 }

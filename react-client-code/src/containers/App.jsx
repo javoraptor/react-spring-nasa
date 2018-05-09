@@ -7,13 +7,14 @@ import Cameras from '../components/cameras';
 import CustomDate from '../components/custom-date';
 import FileDate from '../components/file-date';
 import ImageCarousel from '../components/image-carousel';
+import * as moment from 'moment';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      date: '',
+      date: null,
       FHAZ: false,
       RHAZ: false,
       MAST: false,
@@ -43,13 +44,13 @@ class App extends Component {
     });
   }
 
-  onDateChange(e) {
-    console.log('e', e.target.value);
-    this.setState({date: e.target.value, response: ''});
+  onDateChange(event, date) {
+    const newDate =  moment(date).format('DD-MMM-YY');
+    this.setState({date:newDate , response: ''});
   }
 
   onCheckBoxSelection(e) {
-    let name = e.nativeEvent.target.innerHTML;
+    const name = e.nativeEvent.target.innerHTML;
 
     this.setState({
       [name]: !this.state[name],
@@ -58,11 +59,11 @@ class App extends Component {
   }
 
   onCalendarButtonClick() {
-    if (this.state.date === '') {
+    if (this.state.date === null) {
       return;
     }
 
-    this.setState({response: '', loading: true});
+    this.setState({response: '', loading: true, imgList:[]});
 
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
@@ -111,9 +112,10 @@ class App extends Component {
   }
 
   render() {
-    // console.log(this.state);
+    console.log(this.state);
 
     return (<div>
+      what the actual fuck
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo"/>
@@ -128,7 +130,7 @@ class App extends Component {
 
         <Grid.Row textAlign='center' container columns={4}>
           <Grid.Column>
-            <CustomDate dateCallback={(e) => this.onDateChange(e)} buttonCallback={() => this.onCalendarButtonClick()} date={this.state.date}/>
+            <CustomDate dateCallback={(e,d) => this.onDateChange(e,d)} buttonCallback={() => this.onCalendarButtonClick()} dates={this.state.date}/>
           </Grid.Column>
           <Grid.Column>
             <FileDate dates={this.state.fileList} callback={() => this.onFileButtonClick()}/>

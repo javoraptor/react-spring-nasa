@@ -1,18 +1,20 @@
 import React from 'react';
 import {Segment, Button} from 'semantic-ui-react';
-import {Row, Input} from 'react-materialize';
-const customDate = ({dateCallback, buttonCallback, date})=>{
+import DatePicker from 'material-ui/DatePicker';
+
+const customDate = ({dateCallback, buttonCallback, dates})=>{
   return (<div>
     <h3>
       Select Earth Date
     </h3>
-    <Row>
-       <div>
-         <Input name='on' type='date' onChange={(e) => dateCallback(e)}/>
-       </div>
-     </Row>
 
-    {dateCheck(date)}
+    <DatePicker
+        hintText="Date Input"
+        onChange={(event, date) => dateCallback(event, date)}
+
+      />
+
+    {dateCheck(dates)}
 
     <div>
       <Button color='facebook' onClick={() => buttonCallback()}>Submit
@@ -21,8 +23,8 @@ const customDate = ({dateCallback, buttonCallback, date})=>{
   </div>);
 }
 
-const dateCheck = (date)=>{
-  if(date === ''){
+const dateCheck = (dates)=>{
+  if(dates === ''){
     return(
       <p>
         Please Enter A Valid Date

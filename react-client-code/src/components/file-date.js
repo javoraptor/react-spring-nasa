@@ -13,15 +13,18 @@ const FileDate = ({callback, dates}) => {
   </div>);
 }
 
-const returnList = (dates) => {
-  return dates.map((entry, index) => {
-    return (<List.Item key={index}>
-      <Icon name='checked calendar'/>
-      <List.Content>
-        <List.Header>{entry}</List.Header>
-      </List.Content>
-    </List.Item>);
-  });
+const returnList = dates => {
+
+  if(dates !== undefined){
+    return dates.map((entry, index) => {
+      return (<List.Item key={index}>
+        <Icon name='checked calendar'/>
+        <List.Content>
+          <List.Header>{entry}</List.Header>
+        </List.Content>
+      </List.Item>);
+    });
+  }
 };
 
 export default FileDate;
