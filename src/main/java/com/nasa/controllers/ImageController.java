@@ -21,7 +21,7 @@ import com.nasa.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @ConfigurationProperties()
 @Slf4j
 public class ImageController {

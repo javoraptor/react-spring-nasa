@@ -10,6 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need and IDE of choice, STS was used for this project, and node for front end development.
 
+The NASA API used requires a private API key for continuous use. This project used the default public API key that the API provides but is limited to n number of calls per day. You may provide a private key through a server param such as -Dprivatekey=<privateKey>
+
 
 ### Installing
 
@@ -110,12 +112,19 @@ You can now execute the jar located under build/libs. If you would like to use t
 ## Highlights
 
 * Caching: Fixed rate of 6 hours, can be changed in config file
-* Async Rest: WIP on asynch branch
+* Async Rest: WIP on async branch
+
+## Future Enhancements
+* React JEST Test Suite
+* React Logging, configure log server (track.js)
+* Add JS Linter
+* Wrap Controller response in ResponseDTO to better communicate success/failures with client. 
 
 ## Built With
 
-* [React](https://reactjs.org/) - UI JS Application
+* [React](https://reactjs.org/) - UI Framework
 * [React Materizlise](https://react-materialize.github.io) - UI Styling
+* [React Semantic UI](https://react.semantic-ui.com/) - UI Styling
 * [Spring](https://projects.spring.io/spring-boot/) - JAVA Application
 * [Gradle](https://gradle.org/) - Build tool
 * [Maven](https://maven.apache.org/) - BackEnd Dependency Management
@@ -124,9 +133,9 @@ You can now execute the jar located under build/libs. If you would like to use t
 
 ## Authors
 
-* **Javier Abonza** - *Initial work* - [Resume](http://jabonza.me)
+* **Javier Abonza** - [Resume](http://jabonza.me)
 
 
 ## Acknowledgments
 
-* Raptor
+* **Raptor**

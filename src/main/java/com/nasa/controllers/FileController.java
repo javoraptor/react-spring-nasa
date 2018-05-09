@@ -1,4 +1,4 @@
-package com.nasa.spring;
+package com.nasa.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @ConfigurationProperties()
 @Slf4j
+@CrossOrigin(origins = "http://localhost:3000")
 public class FileController {
 
 	@Value("${date.file}")
 	private String dateFile;
 
 	@GetMapping("/files/dates")
+
 	public List<String> returnDatesFromFile() {
 		log.info("Starting file read for dates");
 		List<String> list = new ArrayList<String>();

@@ -1,14 +1,16 @@
 import React from 'react';
-import {Segment, Input, Button} from 'semantic-ui-react';
-
+import {Segment, Button} from 'semantic-ui-react';
+import {Row, Input} from 'react-materialize';
 const customDate = ({dateCallback, buttonCallback, date})=>{
   return (<div>
     <h3>
       Select Earth Date
     </h3>
-      <div>
-        <Input name='on' type='date' onChange={(e) => dateCallback(e)}/>
-      </div>
+    <Row>
+       <div>
+         <Input name='on' type='date' onChange={(e) => dateCallback(e)}/>
+       </div>
+     </Row>
 
     {dateCheck(date)}
 

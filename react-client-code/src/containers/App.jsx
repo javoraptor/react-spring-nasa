@@ -9,6 +9,7 @@ import FileDate from '../components/file-date';
 import ImageCarousel from '../components/image-carousel';
 
 class App extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -27,12 +28,13 @@ class App extends Component {
       loading: false,
       fileList: []
     }
+    this.succesResponse = 'Success! If images were found they have been downloaded and will be displayed below.';
+    this.errorResponse = 'Sorry, there seems to have been an issue';
   }
 
   componentWillMount() {
 
     fetch('http://localhost:9090/files/dates').then((response) => response.json()).then((responseJson) => {
-      console.log('JSONresponse: ', responseJson);
       if (responseJson) {
         this.setState({fileList: responseJson});
       }
@@ -59,6 +61,7 @@ class App extends Component {
     if (this.state.date === '') {
       return;
     }
+
     this.setState({response: '', loading: true});
 
     let list = [];
@@ -69,14 +72,14 @@ class App extends Component {
       }
     }
 
-    fetch('http://localhost:9090/images/date/' + this.state.date + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
-      console.log('JSONresponse: ', responseJson);
+    fetch('http://localhost:9090/images/date/' + this.state.date + '?cameras=' + list)
+    .then((response) => response.json())
+    .then((responseJson) => {
       if (responseJson) {
-        this.setState({imgList: responseJson, response: 'Success! Images have been saved', loading: false});
+        this.setState({imgList: responseJson, response: this.succesResponse, loading: false});
       } else {
-        this.setState({imgList: responseJson, response: 'Sorry, there seems to be an issue', loading: false});
+        this.setState({imgList: responseJson, response: this.errorResponse, loading: false});
       }
-
     }).catch((error) => {
       console.error(error);
     });
@@ -96,11 +99,10 @@ class App extends Component {
 
     //make rest call here
     fetch('http://localhost:9090/images/file' + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
-      console.log('response:', responseJson);
       if (responseJson) {
-        this.setState({imgList: responseJson, response: 'Success! Images have been saved', loading: false});
+        this.setState({imgList: responseJson, response: this.succesResponse, loading: false});
       } else {
-        this.setState({imgList: responseJson, response: 'Sorry, there seems to be an issue', loading: false});
+        this.setState({imgList: responseJson, response: this.errorResponse, loading: false});
       }
 
     }).catch((error) => {
@@ -109,7 +111,7 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
 
     return (<div>
       <div className="App">
@@ -119,7 +121,7 @@ class App extends Component {
         </header>
       </div>
 
-      <Grid textAlign='center' container columns={1}>
+      <Grid textAlign='center' centered container columns={1}>
         <Grid.Column>
           <Cameras callback={(e) => this.onCheckBoxSelection(e)}/>
         </Grid.Column>
@@ -133,12 +135,17 @@ class App extends Component {
           </Grid.Column>
         </Grid.Row>
 
-        <Grid.Row textAlign='center' container columns={4}>
+        <Grid.Row textAlign='center' container columns={2}>
           <Grid.Column>
-            <ImageCarousel imgList={this.state.imgList} loading={this.state.loading}/>
             <h2>
               {this.state.response}
             </h2>
+          </Grid.Column>
+        </Grid.Row>
+
+        <Grid.Row textAlign='center' container columns={4}>
+          <Grid.Column>
+            <ImageCarousel imgList={this.state.imgList} loading={this.state.loading}/>
           </Grid.Column>
         </Grid.Row>
       </Grid>

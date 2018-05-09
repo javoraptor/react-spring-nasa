@@ -54,12 +54,12 @@ public class Utils {
 	}
 
 	public static String convertToYearMonthDay(String temp, boolean isCustomDate) {
-		log.info("Converting date -> " + temp + "to correct format based on ->" + isCustomDate);
+		log.info("Converting date -> " + temp + " to correct format based on -> " + isCustomDate);
 		SimpleDateFormat originalFormat;
 		
 		if(isCustomDate) {
-			return temp;
-//			originalFormat = new SimpleDateFormat("dd MMMM, yyyy");
+//			return temp;
+			originalFormat = new SimpleDateFormat("dd MMMM, yyyy");
 		}else {
 			originalFormat = new SimpleDateFormat("dd-MMM-yy");
 		}
