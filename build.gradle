@@ -42,6 +42,18 @@ dependencies {
 	compile group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
 }
 
+
+task stage(dependsOn: ['build', 'clean'])
+
+build.mustRunAfter clean
+
+task copyToLib(type: Copy) {
+    into "$buildDir/lib"
+    from(configurations.compile)
+}
+
+stage.dependsOn(copyToLib)
+
 jacoco {
     toolVersion = "0.8.1"
     reportsDir = file("$buildDir/customJacocoReportDir")
