@@ -28,13 +28,13 @@ public class Utils {
 		imageDirectoryName = dirName;
 	}
 
-	public static void downloadImageToFile(String url, String idSource, String date, boolean isCustomDate) throws IOException {
+	public static void downloadImageToFile(String url, String idSource, String date) throws IOException {
 		log.info("Downloading image to file with url -> " + url + " : idSource -> " + idSource 
-				+ " : date -> " + date + " : isCustomDate ->" + isCustomDate);
+				+ " : date -> " + date);
 
 		RestTemplate restTemplate = new RestTemplate();
 		byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-		writeBytesToFile(imageBytes, idSource + ".jpg", date, isCustomDate);
+		writeBytesToFile(imageBytes, idSource + ".jpg", date);
 	}
 
 	public static List<String> readFileIntoDateArray(String fileName) throws FileNotFoundException {
@@ -53,34 +53,27 @@ public class Utils {
 		return dateList;
 	}
 
-	public static String convertToYearMonthDay(String temp, boolean isCustomDate) {
-		log.info("Converting date -> " + temp + " to correct format based on -> " + isCustomDate);
-		SimpleDateFormat originalFormat;
+	public static String convertToYearMonthDay(String dateInString) {
+		log.info("Converting date -> " + dateInString + " to correct format");
 		
-		if(isCustomDate) {
-//			return temp;
-			originalFormat = new SimpleDateFormat("dd MMMM, yyyy");
-		}else {
-			originalFormat = new SimpleDateFormat("dd-MMM-yy");
-		}
+		SimpleDateFormat originalFormat = new SimpleDateFormat("dd-MMM-yy");
 		
 		SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String dateInString = temp;
 		Date date = null;
 
 		try {
 			date = originalFormat.parse(dateInString);
 		} catch (ParseException e) {
-			log.error("Error converting date -> " + temp, e);
+			log.error("Error converting date -> " + dateInString, e);
 		}
 		return newFormat.format(date);
 	}
 
-	private static void writeBytesToFile(byte[] bFile, String fileDest, String date, boolean isCustomDate) throws IOException {
-		log.info("Writing image bytes to file, file destination -> " + fileDest + " : date -> " + date + " : isCustomDate ->" + isCustomDate);
+	private static void writeBytesToFile(byte[] bFile, String fileDest, String date) throws IOException {
+		log.info("Writing image bytes to file, file destination -> " + fileDest + " : date -> " + date);
 		FileOutputStream fileOuputStream = null;
 
-		String fileLocation = imageDirectoryName + convertToYearMonthDay(date, isCustomDate) + "/";
+		String fileLocation = imageDirectoryName + convertToYearMonthDay(date) + "/";
 
 		createDirectories(fileLocation);
 

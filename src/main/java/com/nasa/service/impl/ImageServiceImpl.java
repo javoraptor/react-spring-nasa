@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nasa.service.AsyncCallback;
 import com.nasa.service.ImageService;
 import com.nasa.utils.Utils;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -39,8 +37,9 @@ public class ImageServiceImpl implements ImageService {
 		try {
 
 			dateList.forEach(date -> cameraList.forEach((camera) -> {
-				if (executeRestCall(date, camera, isCustomDate) != null)
-					list.add(executeRestCall(date, camera, isCustomDate));
+				String result = executeRestCall(date, camera);
+				if (result != null)
+					list.add(result);
 			}));
 
 		} catch (Exception e) {
@@ -56,24 +55,23 @@ public class ImageServiceImpl implements ImageService {
 		return list;
 	}
 
-	public String executeRestCall(String date, String camera, boolean isCustomDate) {
+	public String executeRestCall(String date, String camera) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
 		String result = null;
 		OkHttpClient client = new OkHttpClient();
 
 		try {
-			Response response = client.newCall(buildRequest(Utils.convertToYearMonthDay(date, isCustomDate), camera))
+			Response response = client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera))
 					.execute();
-			result = downloadResponseToFile(response, date, isCustomDate);
+			result = downloadResponseToFile(response, date);
 		} catch (IOException e) {
 			log.error("Error in single rest call", e);
 		}
 		return result;
 	}
 
-	private String downloadResponseToFile(Response response, String date, boolean isCustomDate) throws IOException {
-		log.info("Downloading response to file: " + response + " with date -> " + date + "with isCustomDate ->"
-				+ isCustomDate);
+	private String downloadResponseToFile(Response response, String date) throws IOException {
+		log.info("Downloading response to file: " + response + " with date -> " + date);
 
 		String name = null;
 		ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +83,7 @@ public class ImageServiceImpl implements ImageService {
 				JsonNode photoNode = root.path("photos").get(0);
 				String idSource = photoNode.path("id").asText();
 				name = photoNode.path("img_src").asText();
-				Utils.downloadImageToFile(name, idSource, date, isCustomDate);
+				Utils.downloadImageToFile(name, idSource, date);
 			}
 		} catch (IOException e) {
 			log.error("Error reading response or writting file", e);

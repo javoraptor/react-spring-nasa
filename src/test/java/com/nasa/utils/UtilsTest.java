@@ -16,7 +16,7 @@ public class UtilsTest {
 	public void givenCustomeDate_whenConvertToYearMonthDay_thenFormatCorrectly() {
 		String correctFormat = "1999-05-01";
 		@SuppressWarnings("static-access")
-		String newFormat = utils.convertToYearMonthDay("01 MAY, 1999", true);
+		String newFormat = utils.convertToYearMonthDay("01 MAY, 1999");
 		assertThat(newFormat).isEqualTo(correctFormat);
 	}
 	
@@ -24,7 +24,7 @@ public class UtilsTest {
 	public void givenDatesFromFile_whenConvertToYearMonthDay_thenFormatCorrectly() {
 		String correctFormat = "2019-05-05";
 		@SuppressWarnings("static-access")
-		String newFormat = utils.convertToYearMonthDay("05-May-19", false);
+		String newFormat = utils.convertToYearMonthDay("05-May-19");
 		assertThat(newFormat).isEqualTo(correctFormat);
 	}
 	
