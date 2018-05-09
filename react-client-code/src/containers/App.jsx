@@ -9,6 +9,8 @@ import FileDate from '../components/file-date';
 import ImageCarousel from '../components/image-carousel';
 import * as moment from 'moment';
 
+const APP_URL = process.env.REACT_APP_SPRING_API;
+
 class App extends Component {
 
   constructor(props) {
@@ -35,7 +37,7 @@ class App extends Component {
 
   componentWillMount() {
 
-    fetch('http://localhost:9090/files/dates').then((response) => response.json()).then((responseJson) => {
+    fetch(APP_URL + '/files/dates').then((response) => response.json()).then((responseJson) => {
       if (responseJson) {
         this.setState({fileList: responseJson});
       }
@@ -73,7 +75,7 @@ class App extends Component {
       }
     }
 
-    fetch('http://localhost:9090/images/date/' + this.state.date + '?cameras=' + list)
+    fetch(APP_URL + '/images/date/' + this.state.date + '?cameras=' + list)
     .then((response) => response.json())
     .then((responseJson) => {
       if (responseJson) {
@@ -99,7 +101,7 @@ class App extends Component {
     }
 
     //make rest call here
-    fetch('http://localhost:9090/images/file' + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
+    fetch(APP_URL + '/images/file' + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
       if (responseJson) {
         this.setState({imgList: responseJson, response: this.succesResponse, loading: false});
       } else {
