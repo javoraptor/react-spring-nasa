@@ -117,7 +117,6 @@ class App extends Component {
     console.log(this.state);
 
     return (<div>
-      what the actual fuck
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo"/>
