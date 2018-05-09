@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nasa.service.AsyncCallback;
 import com.nasa.service.ImageService;
 import com.nasa.utils.Utils;
 import com.squareup.okhttp.Callback;
