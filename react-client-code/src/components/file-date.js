@@ -1,5 +1,6 @@
 import React from 'react';
 import {Button, List, Icon} from 'semantic-ui-react';
+import './component.css';
 
 const FileDate = ({callback, dates}) => {
   return (<div>

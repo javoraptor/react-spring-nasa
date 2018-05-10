@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'semantic-ui-react';
 import DatePicker from 'material-ui/DatePicker';
+import './component.css';
 
 const customDate = ({dateCallback, buttonCallback, dates})=>{
   return (<div>
