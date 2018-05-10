@@ -56,6 +56,11 @@ jacocoTestReport {
     }
 }
 
+node {
+  version = '8.11.1'
+  download = true
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
 }
