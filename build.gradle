@@ -12,7 +12,7 @@ buildscript {
 }
 plugins {
   id "org.sonarqube" version "2.6"
-  id "com.moowork.node" version "1.0.1"
+  id "com.moowork.node" version "1.2.0"
 }
 
 
