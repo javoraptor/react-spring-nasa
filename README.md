@@ -112,20 +112,22 @@ You can now execute the jar located under build/libs. If you would like to use t
 
 ## Highlights
 
+* Asynchronous file downloads via okHttp
+* Web socket connection to front end for image URL transfers
 * Caching: Fixed rate of 6 hours, can be changed in config file
-* Async Rest: WIP on async branch
 
 ## Future Enhancements
 * React JEST Test Suite
 * React Logging, configure log server (track.js)
-* Add JS Linter
-* Wrap Controller response in ResponseDTO to better communicate success/failures with client. 
+* JS Linter
+* Gradle build tasks for js/java build on deployment
 
 ## Built With
 
 * [React](https://reactjs.org/) - UI Framework
-* [React Materizlise](https://react-materialize.github.io) - UI Styling
+* [React Material UI](https://www.material-ui.com/#/) - UI Styling
 * [React Semantic UI](https://react.semantic-ui.com/) - UI Styling
+* [React Bootstrap](https://react-bootstrap.github.io/) - UI Styling
 * [Spring](https://projects.spring.io/spring-boot/) - JAVA Application
 * [Gradle](https://gradle.org/) - Build tool
 * [Maven](https://maven.apache.org/) - BackEnd Dependency Management

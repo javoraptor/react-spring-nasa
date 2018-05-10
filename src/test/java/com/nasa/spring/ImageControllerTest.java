@@ -38,8 +38,8 @@ public class ImageControllerTest {
 	public void setUp() throws IOException {
 		String date = new Date().toString();
 		List<String> cameraList = Arrays.asList("FHAZ","RHAZ");
-		doNothing().when(imageService).executeMultipleRestCalls(cameraList, Arrays.asList(date), true);
-		doThrow(IOException.class).when(imageService).executeMultipleRestCalls(cameraList, Arrays.asList("null"), true);
+		doNothing().when(imageService).executeMultipleRestCalls(cameraList, Arrays.asList(date));
+		doThrow(IOException.class).when(imageService).executeMultipleRestCalls(cameraList, Arrays.asList("null"));
 	}
 
 	@Test

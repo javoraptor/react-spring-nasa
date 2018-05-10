@@ -1,7 +1,6 @@
 package com.nasa.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nasa.domain.ResponseDTO;
 import com.nasa.service.ImageService;
+import com.nasa.utils.MessageConstants;
 import com.nasa.utils.Utils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,32 +35,39 @@ public class ImageController {
 
 	@Cacheable("ui-images")
 	@GetMapping("/images/date/{date}")
-	public List<String> fetchImages(@PathVariable("date") String date,
+	public ResponseDTO fetchImages(@PathVariable("date") String date,
 								@RequestParam(value="cameras", required=true) List<String> cameraList) {
 		log.info("Begining REST call with parameters: date -> " + date + " : cameraList -> " + cameraList);
-		List<String> list = new ArrayList<String>();
+		
+    	ResponseDTO responseDTO = new ResponseDTO(ResponseDTO.Status.SUCCESS,
+                MessageConstants.RETRIEVED_SUCCESSFULLY);
 		
 		try {
-			list = imageService.executeMultipleRestCalls(cameraList, Arrays.asList(date), true);
+			imageService.executeMultipleRestCalls(cameraList, Arrays.asList(date));
 		} catch (IOException e) {
 			log.error("Error making REST calls", e.toString());
-			return new ArrayList<String>();
+			responseDTO.setStatus(ResponseDTO.Status.FAIL);
+            responseDTO.setMessage(e.getMessage());
 		}
-		return list;
+		return responseDTO;
 	}
 	
 	@Cacheable("file-images")
 	@GetMapping("/images/file")
-	public List<String> readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
+	public ResponseDTO readDatesFromFile(@RequestParam(value="cameras", required=true) List<String> cameraList) {
 		log.info("Begining REST call with parameters: cameraList -> " + cameraList);
-		List<String> list = new ArrayList<String>();
+		
+	   	ResponseDTO responseDTO = new ResponseDTO(ResponseDTO.Status.SUCCESS,
+                MessageConstants.RETRIEVED_SUCCESSFULLY);
+	   	
 		try {
-			list = imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile), false);
+			imageService.executeMultipleRestCalls(cameraList, Utils.readFileIntoDateArray(dateFile));
 		} catch (Exception e) {
 			log.error("Error making REST calls", e.toString());
-			return new ArrayList<String>();
+			responseDTO.setStatus(ResponseDTO.Status.FAIL);
+            responseDTO.setMessage(e.getMessage());
 		}
-		return list;
+		return responseDTO;
 	}
 
 }

@@ -2,16 +2,21 @@ package com.nasa.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nasa.service.AsyncCallback;
 import com.nasa.service.ImageService;
 import com.nasa.utils.Utils;
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -30,45 +35,80 @@ public class ImageServiceImpl implements ImageService {
 	@Value("${nasa.uri}")
 	private String nasaUri;
 
+	@Autowired
+	private SimpMessagingTemplate template;
+	
 	@Override
-	public List<String> executeMultipleRestCalls(List<String> cameraList, List<String> dateList, boolean isCustomDate)
-			throws IOException {
-		final List<String> list = new ArrayList<String>();
+	public void executeMultipleRestCalls(List<String> cameraList, List<String> dateList) throws IOException {
+
 		try {
 
-			dateList.forEach(date -> cameraList.forEach((camera) -> {
-				String result = executeRestCall(date, camera);
-				if (result != null)
-					list.add(result);
-			}));
+			dateList.forEach(
+					date -> cameraList.forEach((camera) -> executeRestCall(date, camera, new AsyncCallback<String>() {
+						@Override
+						public void callbackValue(String value) {
+							if (value != null)
+								sendMessageThroughSocket(value);
+						}
+					})));
 
 		} catch (Exception e) {
 			log.error("Error executing rest call", e);
 			throw new IOException(e);
 		}
-
-		log.info("list values are ->");
-		for (String s : list) {
-			log.info(s);
-		}
-
-		return list;
 	}
 
-	public String executeRestCall(String date, String camera) {
+	protected void sendMessageThroughSocket(String value) {
+		this.template.convertAndSend("/image-topic", Collections.singleton(value));
+	}
+
+	public void executeRestCall(String date, String camera, final AsyncCallback asyncCallback) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
-		String result = null;
+
 		OkHttpClient client = new OkHttpClient();
 
-		try {
-			Response response = client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera))
-					.execute();
-			result = downloadResponseToFile(response, date);
-		} catch (IOException e) {
-			log.error("Error in single rest call", e);
-		}
-		return result;
+		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
+			@Override
+			public void onFailure(Request request, IOException e) {
+				log.error("Error in single rest call", e);
+			}
+
+			@Override
+			public void onResponse(Response response) throws IOException {
+				if (!response.isSuccessful()) {
+					throw new IOException("HTTP response code not within 200-300: " + response);
+				} else {
+					try {
+						// if(downloadResponseToFile(response, date,
+						// isCustomDate) != null)
+
+						asyncCallback.callbackValue(downloadResponseToFile(response, date));
+
+					} catch (Exception e) {
+						log.error("Error in single rest call on success", e);
+						throw new IOException(e);
+					}
+				}
+			}
+		});
 	}
+
+	// public String executeRestCall(String date, String camera) {
+	// log.info("Executing single REST call with parameters: date ->" + date + "
+	// :camera -> " + camera);
+	// String result = null;
+	// OkHttpClient client = new OkHttpClient();
+	//
+	// try {
+	// Response response =
+	// client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera))
+	// .execute();
+	// result = downloadResponseToFile(response, date);
+	// } catch (IOException e) {
+	// log.error("Error in single rest call", e);
+	// }
+	// return result;
+	// }
 
 	private String downloadResponseToFile(Response response, String date) throws IOException {
 		log.info("Downloading response to file: " + response + " with date -> " + date);

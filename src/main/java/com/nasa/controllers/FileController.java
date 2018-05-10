@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nasa.domain.ResponseDTO;
+import com.nasa.utils.MessageConstants;
 import com.nasa.utils.Utils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +25,25 @@ public class FileController {
 	private String dateFile;
 
 	@GetMapping("/files/dates")
-
-	public List<String> returnDatesFromFile() {
+	public ResponseDTO returnDatesFromFile() {
 		log.info("Starting file read for dates");
+		
+		ResponseDTO responseDTO = new ResponseDTO(ResponseDTO.Status.SUCCESS,
+                MessageConstants.RETRIEVED_SUCCESSFULLY);
+		
 		List<String> list = new ArrayList<String>();
+		
+		
 		try {
 			list = Utils.readFileIntoDateArray(dateFile);
+			responseDTO.setFileList(list);
 		} catch (Exception e) {
 			log.error("Error fetching dates from file", e.toString());
-			return new ArrayList<String>();
+			responseDTO.setStatus(ResponseDTO.Status.FAIL);
+            responseDTO.setMessage(e.getMessage());
 		}
-		return list;
+		
+		return responseDTO;
 	}
 
 }
