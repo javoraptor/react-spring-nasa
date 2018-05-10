@@ -12,6 +12,7 @@ buildscript {
 }
 plugins {
   id "org.sonarqube" version "2.6"
+  id "com.moowork.node" version "1.0.1"
 }
 
 
@@ -63,3 +64,19 @@ task copyReactBuild(type: Copy) {
 		    from 'react-client-code/build'
     		into 'src/main/resources/static'
 }
+
+task yarnInstall(type: YarnTask){
+	description ='installs dependencies'
+	workingDir = file("${project.projectDir}/react-client-code")
+	args =['install']
+}
+
+task yarnBuild(type: YarnTask){
+	description ='installs dependencies'
+	workingDir = file("${project.projectDir}/react-client-code")
+	args =['build']
+}
+
+build.dependsOn = ['copyReactBuild']
+copyReactBuild.dependsOn = ['yarnBuild']
+yarnBuild.dependsOn = ['yarnInstall']
