@@ -5,7 +5,7 @@ const FileDate = ({callback, dates}) => {
   return (<div>
     <h3>Download Dates From MarsDates.txt</h3>
     <h4>Dates:</h4>
-      <List animated="animated" verticalAlign='middle' relaxed={true}>{returnList(dates)}</List>
+      <List animated={true} verticalAlign='middle' relaxed={true}>{returnList(dates)}</List>
     <div>
       <Button color='facebook' onClick={() => callback()}>Submit
       </Button>

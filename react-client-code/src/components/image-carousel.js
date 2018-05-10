@@ -5,7 +5,7 @@ import {Carousel} from 'react-materialize';
 const ImageCarousel = ({imgList, loading}) =>{
     return(
       <div>
-        {isLoading(loading)}
+        // {isLoading(loading)}
         {carousel(imgList)}
       </div>
     );

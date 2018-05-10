@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import logo from '../logo.svg';
 import './App.css';
 import {Grid} from 'semantic-ui-react';
-import {RingLoader} from 'react-spinners';
 import Cameras from '../components/cameras';
 import CustomDate from '../components/custom-date';
 import FileDate from '../components/file-date';
-import ImageCarousel from '../components/image-carousel';
+import BootImageCarousel from '../components/boot-image-carousel';
 import * as moment from 'moment';
+import SockJsClient from 'react-stomp';
+import {Carousel, Col, Row, Thumbnail} from 'react-bootstrap';
+import {Grid as BootGrid} from 'react-bootstrap';
 
 const APP_URL = process.env.REACT_APP_SPRING_API;
 
@@ -17,6 +19,7 @@ class App extends Component {
     super(props);
     this.state = {
       date: null,
+      oldDateFormat: null,
       FHAZ: false,
       RHAZ: false,
       MAST: false,
@@ -28,18 +31,17 @@ class App extends Component {
       MINITES: false,
       response: '',
       imgList: [],
-      loading: false,
       fileList: []
     }
-    this.succesResponse = 'Success! If images were found they have been downloaded and will be displayed below.';
+    this.successResponse = 'Success! If images were found they have been downloaded and will be displayed below.';
     this.errorResponse = 'Sorry, there seems to have been an issue';
   }
 
   componentWillMount() {
-
+    console.log('app url ', APP_URL);
     fetch(APP_URL + '/files/dates').then((response) => response.json()).then((responseJson) => {
-      if (responseJson) {
-        this.setState({fileList: responseJson});
+      if (responseJson.list) {
+        this.setState({fileList: responseJson.list});
       }
     }).catch((error) => {
       console.error(error);
@@ -47,8 +49,8 @@ class App extends Component {
   }
 
   onDateChange(event, date) {
-    const newDate =  moment(date).format('DD-MMM-YY');
-    this.setState({date:newDate , response: ''});
+    const newDate = moment(date).format('DD-MMM-YY');
+    this.setState({date: newDate, oldDateFormat:date, response: ''});
   }
 
   onCheckBoxSelection(e) {
@@ -65,7 +67,7 @@ class App extends Component {
       return;
     }
 
-    this.setState({response: '', loading: true, imgList:[]});
+    this.setState({response: '', imgList: []});
 
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
@@ -75,13 +77,11 @@ class App extends Component {
       }
     }
 
-    fetch(APP_URL + '/images/date/' + this.state.date + '?cameras=' + list)
-    .then((response) => response.json())
-    .then((responseJson) => {
-      if (responseJson) {
-        this.setState({imgList: responseJson, response: this.succesResponse, loading: false});
+    fetch(APP_URL + '/images/date/' + this.state.date + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
+      if (responseJson.status === 'SUCCESS') {
+        this.setState({response: this.successResponse});
       } else {
-        this.setState({imgList: responseJson, response: this.errorResponse, loading: false});
+        this.setState({response: this.errorResponse});
       }
     }).catch((error) => {
       console.error(error);
@@ -89,23 +89,22 @@ class App extends Component {
   }
 
   onFileButtonClick() {
-    this.setState({response: '', loading: true});
+    this.setState({response: ''});
 
     let list = [];
     for (let [key, value] of Object.entries(this.state)) {
       // do something with key|value
-      //filter out loading
       if (value === true) {
         list.push(key);
       }
     }
 
-    //make rest call here
-    fetch(APP_URL + '/images/file' + '?cameras=' + list).then((response) => response.json()).then((responseJson) => {
+    fetch(APP_URL + '/images/file?cameras=' + list).then((response) => response.json()).then((responseJson) => {
+      console.log('json response', responseJson);
       if (responseJson) {
-        this.setState({imgList: responseJson, response: this.succesResponse, loading: false});
+        this.setState({response: this.successResponse});
       } else {
-        this.setState({imgList: responseJson, response: this.errorResponse, loading: false});
+        this.setState({response: this.errorResponse});
       }
 
     }).catch((error) => {
@@ -113,10 +112,22 @@ class App extends Component {
     });
   }
 
+  onMessageReceive = (msg, topic) => {
+    this.setState(prevState => ({
+      imgList: [
+        ...prevState.imgList,
+        msg
+      ]
+    }));
+  }
+
   render() {
     console.log(this.state);
-
+    const socketUri = APP_URL + '/spring-nasa-websocket';
     return (<div>
+      <SockJsClient url={socketUri} topics={['/image-topic']} onMessage={this.onMessageReceive} ref={(client) => {
+          this.clientRef = client
+        }}/>
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo"/>
@@ -124,34 +135,34 @@ class App extends Component {
         </header>
       </div>
 
-      <Grid textAlign='center' centered container columns={1}>
+      <Grid textAlign='center' container={true} centered="centered" columns={1}>
         <Grid.Column>
           <Cameras callback={(e) => this.onCheckBoxSelection(e)}/>
         </Grid.Column>
 
-        <Grid.Row textAlign='center' container columns={4}>
+        <Grid.Row textAlign='center' columns={4}>
           <Grid.Column>
-            <CustomDate dateCallback={(e,d) => this.onDateChange(e,d)} buttonCallback={() => this.onCalendarButtonClick()} dates={this.state.date}/>
+            <CustomDate
+              dateCallback={(e, d) => this.onDateChange(e, d)}
+              buttonCallback={() => this.onCalendarButtonClick()}
+              dates={this.state.oldDateFormat}/>
           </Grid.Column>
           <Grid.Column>
             <FileDate dates={this.state.fileList} callback={() => this.onFileButtonClick()}/>
           </Grid.Column>
         </Grid.Row>
 
-        <Grid.Row textAlign='center' container columns={2}>
+        <Grid.Row textAlign='center' columns={2}>
           <Grid.Column>
             <h2>
               {this.state.response}
             </h2>
           </Grid.Column>
         </Grid.Row>
-
-        <Grid.Row textAlign='center' container columns={4}>
-          <Grid.Column>
-            <ImageCarousel imgList={this.state.imgList} loading={this.state.loading}/>
-          </Grid.Column>
-        </Grid.Row>
       </Grid>
+
+      <BootImageCarousel images={this.state.imgList}/>
+
     </div>);
   }
 }

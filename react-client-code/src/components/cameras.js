@@ -1,5 +1,5 @@
 import React from 'react';
-import {Segment, Checkbox} from 'semantic-ui-react';
+import { Checkbox } from 'semantic-ui-react';
 import './component.css';
 
 const cameras = ({callback}) =>{
