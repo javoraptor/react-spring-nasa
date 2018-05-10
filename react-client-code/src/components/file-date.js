@@ -15,7 +15,8 @@ const FileDate = ({callback, dates}) => {
 
 const returnList = dates => {
 
-  if(dates !== undefined){
+  if (!dates || !dates.length) return null;
+
     return dates.map((entry, index) => {
       return (<List.Item key={index}>
         <Icon name='checked calendar'/>
@@ -24,7 +25,6 @@ const returnList = dates => {
         </List.Content>
       </List.Item>);
     });
-  }
 };
 
 export default FileDate;
