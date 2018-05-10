@@ -65,23 +65,40 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
 }
 
-task copyReactBuild(type: Copy) {
-		    from 'react-client-code/build'
-    		into 'src/main/resources/static'
+task copyReactBuild(dependsOn: 'yarnBuild', type: Copy ) {
+	doLast {
+	            println "copyReactBuild executed"
+	        }
+	
+    from 'react-client-code/build'
+	into 'src/main/resources/static'
 }
 
-task yarnInstall(type: YarnTask){
-	description ='installs dependencies'
-	workingDir = file("${project.projectDir}/react-client-code")
-	args =['install']
-}
-
-task yarnBuild(type: YarnTask){
+task yarnBuild(dependsOn: 'yarnInstall', type: YarnTask){
+	doLast {
+	            println "yarnBuild executed"
+	        }
+	
 	description ='installs dependencies'
 	workingDir = file("${project.projectDir}/react-client-code")
 	args =['build']
 }
 
-build.dependsOn = ['copyReactBuild']
-copyReactBuild.dependsOn = ['yarnBuild']
-yarnBuild.dependsOn = ['yarnInstall']
+task yarnInstall(type: YarnTask){
+	doLast {
+            println "yarnInstall executed"
+        }
+	description ='installs dependencies'
+	workingDir = file("${project.projectDir}/react-client-code")
+	args =['install']
+}
+
+build{
+	doLast {
+		println "build executed"
+			}
+}
+
+//build.mustRunAfter copyReactBuild
+bootJar.dependsOn copyReactBuild
+//build.dependsOn = ['copyReactBuild']
