@@ -1,6 +1,6 @@
 # NASA Rover Image App
 
-React/boot application to fetch rover images based on search criteria or file provided.
+React/boot application to fetch rover images based on search criteria or file provided.  
 [App website](https://nasa-ui.herokuapp.com/)
 
 ## Getting Started
@@ -9,16 +9,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-You will need and IDE of choice, STS was used for this project, and node for front end development.
+You will need and IDE of choice (STS was used for this project) and node for front end development.
 
 The NASA API used requires a private API key for continuous use. This project used the default public API key that the API provides but is limited to n number of calls per day. You may provide a private key through a server param such as -Dprivatekey=<privateKey>
 
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+A step by step series of examples that aids in getting a development env running
 
-Install react dependencies:
+Install react dependencies, navigate to react-client-code dir:
 
 ```
 yarn install
@@ -30,7 +30,8 @@ Install boot dependencies (this will vary on IDE, STS downloads automatically wh
 STS -> right click project and select -> gradle refresh 
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Verify installation of dependencies by making code changes as outlined in the next section. 
+
 
 ### Code Changes
 
@@ -48,9 +49,11 @@ alt+shift+x, b
 
 In your web browser of choice navigate to http://localhost:9090/ in order to view app. 
 
+
 ## Testing
 
-Explain tests used, controller, service ect...
+Spring testing framework has been used to test controllers. Unit tests utilize Assertj.
+
 
 ### Unit Tests Execution
 
@@ -86,29 +89,28 @@ Sonar Analysis:
 
 ## Deployment
 
-If deploying application as is you can leverage the gradle wrapper:
+Gradle script has been modified as to build/bundle/place all js files related to react in src/main/resources:
 
-In order to deploy application all final react files need to be included into src/main/resources. This will download any dependencies needed and start the embedded Tomcat server that will be listening for request on port 9090:
+Relevant tasks in gradle are:
+
+```
+bootJar.dependsOn copyReactBuild
+
+task copyReactBuild(dependsOn: 'yarnBuild', type: Copy )
+
+task yarnBuild(dependsOn: 'yarnInstall', type: YarnTask)
+
+task yarnInstall(type: YarnTask)
+```
+
+Execute build/deployment via gradle wrapper:
+
 
 ```
 ./gradlew bootRun
 ```
 
-If changes to the front end have been made you will have to incorporate those changes into the spring boot app by doing the following tasks:
-
-Build react application:
-
-```
-yarn build
-```
-
-Build jar:
-
-```
-gradle copyReactBuild build
-```
-
-You can now execute the jar located under build/libs. If you would like to use the wrapper then only (gradle copyReactBuild) is needed before executing (./gradlew bootRun)
+Tomcat server that will be listening for request on port 9090.
 
 ## Highlights
 
@@ -120,7 +122,7 @@ You can now execute the jar located under build/libs. If you would like to use t
 * React JEST Test Suite
 * React Logging, configure log server (track.js)
 * JS Linter
-* Gradle build tasks for js/java build on deployment
+
 
 ## Built With
 
