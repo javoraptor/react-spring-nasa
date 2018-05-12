@@ -1,6 +1,6 @@
 # NASA Rover Image App
 
-React/boot application to fetch rover images based on search criteria or file provided.  
+React/Springboot application to fetch rover images based on search criteria or file provided. Performance has been taken into consideration and led to the use of **caching**, **async REST calls** and **websockets** in order to minimize wait time by users.   
 [App website](https://nasa-ui.herokuapp.com/)
 
 ## Getting Started
