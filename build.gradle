@@ -99,6 +99,4 @@ build{
 			}
 }
 
-//build.mustRunAfter copyReactBuild
 bootJar.dependsOn copyReactBuild
-//build.dependsOn = ['copyReactBuild']
