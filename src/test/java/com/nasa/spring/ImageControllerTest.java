@@ -1,13 +1,12 @@
 package com.nasa.spring;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.CoreMatchers.is;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,13 +44,13 @@ public class ImageControllerTest {
 	@Test
 	public void givenRestCall_whenExceptionOccurs_thenReturnFalse() throws Exception {
 		mockMvc.perform(get("/images/date/null?cameras=FHAZ,RHAZ")).andExpect(status().isOk())
-        .andExpect(content().string("false"));
+        .andExpect(jsonPath("status", is("FAIL") ));
 	}
 	
 	@Test
 	public void givenRestCall_whenParametersAreValid_thenReturnTrue() throws Exception {
 		mockMvc.perform(get("/images/date/12-3-1999?cameras=FHAZ,RHAZ")).andExpect(status().isOk())
-        .andExpect(content().string("true"));
+        .andExpect( jsonPath("status", is("SUCCESS")) );
 	}
 	
 	@Test
