@@ -114,14 +114,51 @@ Tomcat server that will be listening for request on port 9090.
 
 ## Highlights
 
-* Asynchronous file downloads via okHttp
-* Web socket connection to front end for image URL transfers
-* Caching: Fixed rate of 6 hours, can be changed in config file
+* Asynchronous file downloads via (com.squareup.okhttp:okhttp:2.7.5)  
+
+```
+public void executeAsyncRestCall(String date, String camera, final AsyncCallback asyncCallback) {
+	log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
+		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
+```
+
+* Web socket connection to front end for image URL transfers:  
+
+In Java Async method via (org.springframework.boot:spring-boot-starter-websocket):  
+
+```
+	protected void sendMessageThroughSocket(String value) {
+		this.template.convertAndSend("/image-topic", Collections.singleton(value));
+	}
+```
+
+React via npm package (react-stomp):  
+
+```
+	<SockJsClient url={socketUri} topics={['/image-topic']} onMessage={this.onMessageReceive} ref={(client) => {
+    	this.clientRef = client
+    }}/>
+```
+
+* Caching: Fixed rate of 6 hours, can be changed in config file  
+
+```
+	@Bean
+	public CacheManager cacheManager() {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager
+				.setCaches(Arrays.asList(new ConcurrentMapCache("ui-images"), 
+						new ConcurrentMapCache("file-images")));
+		return cacheManager;
+	}
+```
 
 ## Future Enhancements
 * React JEST Test Suite
 * React Logging, configure log server (track.js)
 * JS Linter
+* Redux 
+* API documentation (swagger)
 
 
 ## Built With

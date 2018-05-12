@@ -38,13 +38,19 @@ public class ImageServiceImpl implements ImageService {
 	@Autowired
 	private SimpMessagingTemplate template;
 	
+	private OkHttpClient client;
+	
+	public ImageServiceImpl(){
+		this.client = new OkHttpClient();
+	}
+	
 	@Override
 	public void executeMultipleRestCalls(List<String> cameraList, List<String> dateList) throws IOException {
 
 		try {
 
 			dateList.forEach(
-					date -> cameraList.forEach((camera) -> executeRestCall(date, camera, new AsyncCallback<String>() {
+					date -> cameraList.forEach((camera) -> executeAsyncRestCall(date, camera, new AsyncCallback<String>() {
 						@Override
 						public void callbackValue(String value) {
 							if (value != null)
@@ -62,12 +68,11 @@ public class ImageServiceImpl implements ImageService {
 		this.template.convertAndSend("/image-topic", Collections.singleton(value));
 	}
 
-	public void executeRestCall(String date, String camera, final AsyncCallback asyncCallback) {
+	public void executeAsyncRestCall(String date, String camera, final AsyncCallback asyncCallback) {
 		log.info("Executing single REST call with parameters: date ->" + date + " :camera -> " + camera);
 
-		OkHttpClient client = new OkHttpClient();
-
 		client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera)).enqueue(new Callback() {
+			
 			@Override
 			public void onFailure(Request request, IOException e) {
 				log.error("Error in single rest call", e);
@@ -79,11 +84,7 @@ public class ImageServiceImpl implements ImageService {
 					throw new IOException("HTTP response code not within 200-300: " + response);
 				} else {
 					try {
-						// if(downloadResponseToFile(response, date,
-						// isCustomDate) != null)
-
 						asyncCallback.callbackValue(downloadResponseToFile(response, date));
-
 					} catch (Exception e) {
 						log.error("Error in single rest call on success", e);
 						throw new IOException(e);
@@ -92,23 +93,6 @@ public class ImageServiceImpl implements ImageService {
 			}
 		});
 	}
-
-	// public String executeRestCall(String date, String camera) {
-	// log.info("Executing single REST call with parameters: date ->" + date + "
-	// :camera -> " + camera);
-	// String result = null;
-	// OkHttpClient client = new OkHttpClient();
-	//
-	// try {
-	// Response response =
-	// client.newCall(buildRequest(Utils.convertToYearMonthDay(date), camera))
-	// .execute();
-	// result = downloadResponseToFile(response, date);
-	// } catch (IOException e) {
-	// log.error("Error in single rest call", e);
-	// }
-	// return result;
-	// }
 
 	private String downloadResponseToFile(Response response, String date) throws IOException {
 		log.info("Downloading response to file: " + response + " with date -> " + date);
@@ -141,12 +125,6 @@ public class ImageServiceImpl implements ImageService {
 
 		return new Request.Builder().url(urlBuilder.build().toString()).build();
 
-	}
-
-	@Override
-	public List<String> returnDatesFromFile() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

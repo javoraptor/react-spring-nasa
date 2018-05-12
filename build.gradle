@@ -33,14 +33,15 @@ repositories {
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.16.20'
+	compile ('com.squareup.okhttp:okhttp:2.7.5')
+	compileOnly ('org.projectlombok:lombok:1.16.20')
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-data-rest')
 	compile("org.springframework.boot:spring-boot-starter-websocket")
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-	compile group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
+
 }
 
 jacoco {

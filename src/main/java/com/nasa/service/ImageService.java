@@ -9,5 +9,4 @@ import org.springframework.stereotype.Service;
 public interface ImageService {
 
 	public void executeMultipleRestCalls(List<String> cameraList, List<String> dateList) throws IOException;
-	public List<String> returnDatesFromFile();
 }
