@@ -99,7 +99,9 @@ class App extends Component {
       }
     }
 
-    fetch(APP_URL + '/images/file?cameras=' + list).then((response) => response.json()).then((responseJson) => {
+    fetch(APP_URL + '/images/file?cameras=' + list)
+    .then((response) => response.json())
+    .then((responseJson) => {
       console.log('json response', responseJson);
       if (responseJson) {
         this.setState({response: this.successResponse});
